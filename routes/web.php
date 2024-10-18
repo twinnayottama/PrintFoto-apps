@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +17,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
+});
+
+// Login User
+Route::get('login', [LoginController::class, 'index'])->name('login');
+Route::post('login', [LoginController::class, 'store'])->name('login.store');
+Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
+
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('group', GroupController::class);
+    Route::delete('group/delete-all', [GroupController::class, 'deleteAll'])->name('group.deleteAll');
 });
