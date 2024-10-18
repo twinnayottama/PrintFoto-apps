@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\GroupExportController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,4 +31,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     Route::resource('group', GroupController::class);
     Route::delete('group/delete-all', [GroupController::class, 'deleteAll'])->name('group.deleteAll');
+
+    Route::get('export-to-word', [GroupExportController::class, 'exportToWord'])->name('group.exportToWord');
 });

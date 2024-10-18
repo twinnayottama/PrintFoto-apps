@@ -22,11 +22,12 @@
                         <a href="{{ route('group.create') }}" class="btn btn-primary">
                             Tambah Data
                         </a>
-                        <form id="formDeleteAll" action="{{ route('group.deleteAll') }}" method="POST">
+                        {{-- <form id="formDeleteAll" action="{{ route('group.deleteAll') }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Hapus Semua Data</button>
-                        </form>
+                        </form> --}}
+                        <a href="{{ route('group.exportToWord') }}" class="btn btn-success">Export to Word</a>
                     </div>
                 </div>
 
