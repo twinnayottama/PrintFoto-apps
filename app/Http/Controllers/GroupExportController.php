@@ -8,52 +8,51 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class GroupExportController extends Controller
 {
-    public function exportToWord(){
-        try{
+    public function exportToWord()
+    {
+        try {
             $groups = Group::all();
             $templatePath = resource_path('templates/template-group.docx');
             $templateProcessor = new TemplateProcessor($templatePath);
 
-             // Loop melalui data group
-             foreach ($groups as $index => $group) {
-                // Nomor urut dimulai dari 1
-                $number = $index + 1;
+            $replacements = array();
+            $count = count($groups);
+            foreach ($groups as $index => $group) {
 
-                // Jika ini adalah data pertama, gunakan setValue
-                if ($index === 0) {
-                    $templateProcessor->setValue('no#0', $number);
-                    $templateProcessor->setValue('farmer_group#0', $group->farmer_group ?? '');
-                    $templateProcessor->setValue('chairman#0', $group->chairman ?? '');
-                    $templateProcessor->setValue('address#0', $group->address ?? '');
-                    $templateProcessor->setValue('link_foto_1#0', $group->link_foto_1 ?? '');
-                    $templateProcessor->setValue('link_foto_2#0', $group->link_foto_2 ?? '');
-                } else {
-                    // Klon blok untuk setiap data group
-                    $templateProcessor->cloneBlock('group_block', 0, true, true, [
-                        'no#0' => $number,
-                        'farmer_group#0' => $group->farmer_group ?? '',
-                        'chairman#0' => $group->chairman ?? '',
-                        'address#0' => $group->address ?? '',
-                        'link_foto_1#0' => $group->link_foto_1 ?? '',
-                        'link_foto_2#0' => $group->link_foto_2 ?? ''
-                    ]);
-                }
+                $imagePath = public_path($group->link_foto_1); // Path to the uploaded image
+                $imagePath2 = public_path($group->link_foto_2); // Path to the uploaded image
 
-                // Tambahkan page break kecuali pada data terakhir
-                if ($index < count($groups) - 1) {
-                    // Gantikan placeholder page break
-                    $templateProcessor->setValue('page_break#' . $index, '<w:br w:type="page"/>');
-                }
+                $replacements[] = array(
+                    'no' => $index + 1,
+                    'farmer_group' => $group->farmer_group,
+                    'chairman' => $group->chairman,
+                    'address' => $group->address,
+                    'link_foto_1' => $templateProcessor->setImageValue('link_foto_1', [
+                        'path' => $imagePath,
+                        'width' => 400,
+                        'height' => 200,
+                        'ratio' => false
+                    ]),
+                    'link_foto_2' => $templateProcessor->setImageValue('link_foto_2', [
+                        'path' => $imagePath2,
+                        'width' => 500,
+                        'height' => 300,
+                        'ratio' => false
+                    ]),
+                    'page_break'    => ($index < $count - 1) ? '<w:br w:type="page"/>' : ''
+                );
             }
 
+            $templateProcessor->cloneBlock('group_block', count($replacements), true, false, $replacements);
+
             // Simpan file Word yang sudah diproses
-            $fileName = 'group-data-export.docx';
+            $fileName = 'Kelompok Tani.docx';
             $filePath = storage_path('app/public/' . $fileName);
             $templateProcessor->saveAs($filePath);
 
             // Berikan file untuk diunduh
             return response()->download($filePath)->deleteFileAfterSend(true);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }

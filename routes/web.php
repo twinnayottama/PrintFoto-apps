@@ -29,8 +29,8 @@ Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('group', GroupController::class);
     Route::delete('group/delete-all', [GroupController::class, 'deleteAll'])->name('group.deleteAll');
+    Route::resource('group', GroupController::class);
 
     Route::get('export-to-word', [GroupExportController::class, 'exportToWord'])->name('group.exportToWord');
 });

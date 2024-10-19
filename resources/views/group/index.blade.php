@@ -22,12 +22,14 @@
                         <a href="{{ route('group.create') }}" class="btn btn-primary">
                             Tambah Data
                         </a>
-                        {{-- <form id="formDeleteAll" action="{{ route('group.deleteAll') }}" method="POST">
+                        <form action="{{ route('group.deleteAll') }}" method="POST" id="delete-all-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Hapus Semua Data</button>
-                        </form> --}}
-                        <a href="{{ route('group.exportToWord') }}" class="btn btn-success">Export to Word</a>
+
+                            <button type="button" class="btn btn-danger mr-2" id="delete-all-button">Hapus semua
+                                Data</button>
+                        </form>
+                        <a href="{{ route('group.exportToWord') }}" class="btn btn-success">Download Data</a>
                     </div>
                 </div>
 
@@ -91,26 +93,9 @@
     </script>
 
     <script>
-        $('#btnDeleteAll').on('click', function() {
-            if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
-                $.ajax({
-                    url: "{{ route('group.deleteAll') }}",
-                    type: "DELETE",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert(response.message);
-                            location.reload();
-                        } else {
-                            alert('Gagal menghapus data: ' + response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        alert('Terjadi kesalahan: ' + xhr.responseText);
-                    }
-                });
+        document.getElementById('delete-all-button').addEventListener('click', function() {
+            if (confirm('Apakah anda ingin menghapus semua data label?')) {
+                document.getElementById('delete-all-form').submit();
             }
         });
     </script>
